@@ -3,11 +3,13 @@ const mlRegression = require("ml-regression-multivariate-linear");
 
 // Fetch average price for a product name
 exports.getAveragePrice = async (req, res) => {
-  const { name } = req.query;
+  let { name } = req.query;
 
   if (!name) {
     return res.status(400).json({ message: "Product name is required." });
   }
+
+  name = name.toLowerCase();
 
   try {
     const products = await Product.find({ name });
@@ -36,13 +38,15 @@ exports.getAveragePrice = async (req, res) => {
 
 // Predict future price based on historical data using linear regression
 exports.predictFuturePrice = async (req, res) => {
-  const { name, futureDate } = req.body;
+  let { name, futureDate } = req.body;
 
   if (!name || !futureDate) {
     return res
       .status(400)
       .json({ message: "Both 'name' and 'futureDate' are required." });
   }
+
+  name = name.toLowerCase();
 
   try {
     const products = await Product.find({ name }).sort({ dateAdded: 1 });
