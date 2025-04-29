@@ -6,7 +6,9 @@ exports.getAveragePrice = async (req, res) => {
   let { name } = req.query;
 
   if (!name) {
-    return res.status(400).json({ message: "Product name is required." });
+    return res
+      .status(400)
+      .json({ message: "Product name is required.", success: false });
   }
 
   name = name.toLowerCase();
@@ -15,9 +17,10 @@ exports.getAveragePrice = async (req, res) => {
     const products = await Product.find({ name });
 
     if (!products.length) {
-      return res
-        .status(404)
-        .json({ message: `No products found for name: ${name}` });
+      return res.status(404).json({
+        message: `No products found for name: ${name}`,
+        success: false,
+      });
     }
 
     const totalPrice = products.reduce((sum, item) => sum + item.price, 0);
@@ -27,12 +30,15 @@ exports.getAveragePrice = async (req, res) => {
       name,
       averagePrice: parseFloat(averagePrice),
       count: products.length,
+      message: "Average Calculated",
+      success: true,
     });
   } catch (error) {
     console.error("❌ Error in getAveragePrice:", error);
-    res
-      .status(500)
-      .json({ error: "Server error while fetching average price." });
+    res.status(500).json({
+      message: "Server error while fetching average price.",
+      success: false,
+    });
   }
 };
 
@@ -41,9 +47,10 @@ exports.predictFuturePrice = async (req, res) => {
   let { name, futureDate } = req.body;
 
   if (!name || !futureDate) {
-    return res
-      .status(400)
-      .json({ message: "Both 'name' and 'futureDate' are required." });
+    return res.status(400).json({
+      message: "Both 'name' and 'futureDate' are required.",
+      success: false,
+    });
   }
 
   name = name.toLowerCase();
@@ -54,6 +61,7 @@ exports.predictFuturePrice = async (req, res) => {
     if (products.length < 2) {
       return res.status(400).json({
         message: "Not enough historical data to make a prediction.",
+        success: false,
       });
     }
 
@@ -83,11 +91,14 @@ exports.predictFuturePrice = async (req, res) => {
       name,
       futureDate: new Date(futureDate).toISOString().split("T")[0],
       predictedPrice: parseFloat(prediction[0].toFixed(2)),
+      message: "Price predicted",
+      success: true,
     });
   } catch (error) {
     console.error("❌ Error in predictFuturePrice:", error);
-    res
-      .status(500)
-      .json({ error: "Server error while predicting future price." });
+    res.status(500).json({
+      message: "Server error while predicting future price.",
+      success: false,
+    });
   }
 };

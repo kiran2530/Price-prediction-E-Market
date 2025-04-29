@@ -6,6 +6,6 @@ const {
 } = require("../controllers/priceController");
 
 router.get("/average", getAveragePrice);
-router.get("/predict", predictFuturePrice);
+router.post("/predict", predictFuturePrice);
 
 module.exports = router;
